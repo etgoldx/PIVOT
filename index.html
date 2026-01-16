@@ -9,7 +9,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#1b4332">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%231b4332%22 rx=%2220%22/><text x=%2210%22 y=%2275%22 font-size=%2270%22>📈</text></svg>">
 
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -19,6 +18,7 @@
             --paid-bg: #e9f5db; --paid-text: #2d6a4f; --border-color: #e0e6e4;
             --header-gradient: linear-gradient(135deg, #1b4332, #2d6a4f);
             --input-bg: #f9fbfb; --btn-shadow: rgba(27, 67, 50, 0.1);
+            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
         body.dark-mode {
@@ -29,82 +29,116 @@
             --input-bg: #0b1011; --btn-shadow: rgba(56, 176, 0, 0.4);
         }
 
-        body { font-family: 'Quicksand', sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; display: flex; flex-direction: column; align-items: center; transition: all 0.3s ease; min-height: 100vh; }
+        body { font-family: 'Quicksand', sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; display: flex; flex-direction: column; align-items: center; transition: var(--transition); min-height: 100vh; overflow-x: hidden; }
         
-        /* Estilo da Tela de Login */
-        #auth-screen { position: fixed; inset: 0; background: var(--bg-body); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .auth-card { background: var(--bg-card); padding: 40px; border-radius: 28px; width: 100%; max-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); text-align: center; border: 1px solid var(--border-color); }
-        .auth-input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--input-bg); font-family: inherit; box-sizing: border-box; }
-        
-        #main-content { display: none; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        /* AUTH */
+        #auth-screen { position: fixed; inset: 0; background: var(--bg-body); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; transition: var(--transition); }
+        .auth-card { background: var(--bg-card); padding: 40px; border-radius: 28px; width: 100%; max-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); text-align: center; border: 1px solid var(--border-color); animation: slideIn 0.6s ease; }
+        .auth-input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--input-bg); font-family: inherit; box-sizing: border-box; color: var(--text-main); outline: none; transition: var(--transition); }
+        .auth-input:focus { border-color: var(--primary-green); box-shadow: 0 0 0 4px var(--btn-shadow); }
+
+        #main-content { display: none; width: 100%; flex-direction: column; align-items: center; opacity: 0; transition: opacity 0.8s ease; }
+        #main-content.visible { display: flex; opacity: 1; }
+
         .container { width: 98%; max-width: 1400px; padding: 20px; box-sizing: border-box; position: relative; }
         
-        #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #1b4332; color: #70e000; padding: 15px 30px; border-radius: 50px; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 9999; transition: top 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); display: flex; align-items: center; gap: 10px; border: 1px solid var(--primary-green); }
+        /* TOAST */
+        #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #1b4332; color: #70e000; padding: 15px 30px; border-radius: 50px; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 9999; transition: top 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); display: flex; align-items: center; gap: 10px; border: 1px solid var(--primary-green); }
         #toast.show { top: 30px; }
 
-        .top-controls { position: absolute; right: 20px; top: 35px; display: flex; align-items: center; gap: 10px; }
-        .month-selector { border: 2px solid var(--border-color); padding: 10px 15px; border-radius: 12px; font-family: inherit; font-size: 0.85rem; font-weight: 800; outline: none; cursor: pointer; transition: 0.3s; }
+        /* CONTROLS */
+        .top-controls { position: absolute; right: 20px; top: 35px; display: flex; align-items: center; gap: 10px; z-index: 10; }
+        .month-selector { border: 2px solid var(--border-color); padding: 10px 15px; border-radius: 12px; font-family: inherit; font-size: 0.85rem; font-weight: 800; outline: none; cursor: pointer; transition: var(--transition); }
         
-        .round-btn { background: var(--bg-card); border: 1px solid var(--border-color); padding: 10px; border-radius: 50%; cursor: pointer; color: var(--text-main); display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .btn-save { border-color: #ffb100; color: #ffb100; }
+        /* CORES MESES */
+        .opt-jan { background-color: #e0f2fe; color: #0369a1; } .opt-fev { background-color: #fce7f3; color: #be185d; }
+        .opt-mar { background-color: #f0fdf4; color: #15803d; } .opt-abr { background-color: #fff7ed; color: #c2410c; }
+        .opt-mai { background-color: #faf5ff; color: #7e22ce; } .opt-jun { background-color: #fef2f2; color: #b91c1c; }
+        .opt-jul { background-color: #ecfeff; color: #0e7490; } .opt-ago { background-color: #fffbeb; color: #b45309; }
+        .opt-set { background-color: #f5f3ff; color: #6d28d9; } .opt-out { background-color: #fdf2f8; color: #db2777; }
+        .opt-nov { background-color: #eff6ff; color: #1d4ed8; } .opt-dez { background-color: #ecfdf5; color: #047857; }
 
-        .dashboard-top { display: flex; align-items: stretch; background: var(--bg-card); border-radius: 24px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.05); margin-bottom: 25px; border: 1px solid var(--border-color); }
-        .salary-section { padding: 25px 35px; background: rgba(0,0,0,0.02); border-right: 1px dashed var(--border-color); min-width: 280px; }
-        .balance-section { flex: 1; padding: 25px 40px; background: var(--header-gradient); color: white; display: flex; justify-content: space-between; align-items: center; }
+        .round-btn { background: var(--bg-card); border: 1px solid var(--border-color); padding: 10px; border-radius: 50%; cursor: pointer; color: var(--text-main); display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+        .round-btn:hover { transform: scale(1.1); background: var(--input-bg); }
 
-        .category-summary { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 30px; width: 100%; justify-content: center; }
-        .cat-pill { padding: 10px 20px; border-radius: 50px; color: white; font-size: 0.85rem; font-weight: 800; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: none; }
+        /* DASHBOARD TOP ADJUSTED FOR MOBILE */
+        .dashboard-top { display: flex; flex-wrap: wrap; background: var(--bg-card); border-radius: 24px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.05); margin-bottom: 25px; border: 1px solid var(--border-color); transition: var(--transition); }
+        .salary-section { flex: 1; min-width: 250px; padding: 25px; background: rgba(0,0,0,0.02); border-right: 1px dashed var(--border-color); box-sizing: border-box; }
+        .balance-section { flex: 1.5; min-width: 300px; padding: 25px; background: var(--header-gradient); color: white; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
 
+        .category-summary { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; width: 100%; justify-content: center; }
+        .cat-pill { padding: 10px 20px; border-radius: 50px; color: white; font-size: 0.85rem; font-weight: 800; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: none; animation: popIn 0.4s ease forwards; }
+
+        /* LIST GRID */
         #debt-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; width: 100%; }
-        .debt-item { padding: 18px 22px; border-radius: 22px; display: flex; align-items: center; gap: 15px; border: 1.5px solid var(--border-color); background: var(--bg-card); transition: transform 0.2s; position: relative; }
-        .debt-item.paid { background-color: var(--paid-bg) !important; border-color: transparent !important; opacity: 0.6; }
+        .debt-item { padding: 18px 22px; border-radius: 22px; display: flex; align-items: center; gap: 15px; border: 1.5px solid var(--border-color); background: var(--bg-card); transition: var(--transition); position: relative; animation: slideUp 0.5s ease backwards; }
+        .debt-item:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .debt-item.paid { background-color: var(--paid-bg) !important; border-color: transparent !important; opacity: 0.7; }
         
-        .btn-add { background: var(--header-gradient); color: #fff; border: none; padding: 0 25px; height: 50px; border-radius: 14px; font-weight: 800; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; box-shadow: 0 8px 20px var(--btn-shadow); text-transform: uppercase; }
+        .btn-add { background: var(--header-gradient); color: #fff; border: none; padding: 0 25px; height: 50px; border-radius: 14px; font-weight: 800; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: var(--transition); box-shadow: 0 8px 20px var(--btn-shadow); text-transform: uppercase; }
+        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 12px 25px var(--btn-shadow); opacity: 0.95; }
 
         .add-form { background: var(--bg-card); padding: 20px; border-radius: 20px; margin-top: 40px; border: 1px solid var(--border-color); display: flex; flex-direction: row; gap: 15px; align-items: flex-end; width: 100%; box-sizing: border-box; }
         .form-group { display: flex; flex-direction: column; gap: 5px; flex: 1; }
-        .add-form input, .add-form select { padding: 14px; border: 1.5px solid var(--border-color); border-radius: 12px; background: var(--input-bg); color: var(--text-main); font-family: inherit; width: 100%; box-sizing: border-box; }
-        .label-mini { font-size:0.6rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; margin-left: 5px;}
-
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 5000; }
-        .modal-content { background: var(--bg-card); padding: 30px; border-radius: 28px; width: 90%; max-width: 400px; border: 1px solid var(--border-color); text-align: center; }
         
+        /* MODALS TRANSITIONS */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 5000; opacity: 0; transition: opacity 0.3s ease; }
+        .modal-overlay.show { display: flex; opacity: 1; }
+        .modal-content { background: var(--bg-card); padding: 30px; border-radius: 28px; width: 90%; max-width: 400px; border: 1px solid var(--border-color); text-align: center; transform: translateY(30px); transition: transform 0.4s ease; }
+        .modal-overlay.show .modal-content { transform: translateY(0); }
+
+        /* ANIMATIONS */
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+
+        /* MOBILE FIXES */
         @media (max-width: 1200px) { #debt-list { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 768px) { #debt-list { grid-template-columns: 1fr; } .add-form { flex-direction: column; align-items: stretch; } .top-controls { position: relative; top:0; right:0; margin-bottom: 20px; } }
+        @media (max-width: 768px) { 
+            #debt-list { grid-template-columns: 1fr; } 
+            .add-form { flex-direction: column; align-items: stretch; } 
+            .top-controls { position: relative; top:0; right:0; margin-bottom: 20px; justify-content: center; } 
+            .salary-section, .balance-section { flex: 100%; border-right: none; border-bottom: 1px dashed var(--border-color); text-align: center; }
+            .balance-section { flex-direction: column; gap: 15px; }
+            #folga-value { font-size: 2rem !important; }
+            .salary-section input { text-align: center !important; font-size: 1.4rem !important; }
+        }
     </style>
 </head>
 <body>
 
 <div id="auth-screen">
     <div class="auth-card">
-        <h1 style="margin:0 0 10px; font-weight: 800;">PIVOT</h1>
-        <p style="color: var(--text-muted); margin-bottom: 30px;">Acesse seu controle financeiro</p>
+        <h1 style="margin:0 0 10px; font-weight: 800; background: var(--header-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">PIVOT</h1>
+        <p style="color: var(--text-muted); margin-bottom: 30px; font-weight: 600;">Controle Financeiro Online</p>
         <input type="email" id="email" class="auth-input" placeholder="Seu e-mail">
         <input type="password" id="password" class="auth-input" placeholder="Sua senha">
         <button class="btn-add" onclick="handleAuth()" style="width: 100%; margin-top: 10px;">CADASTRAR / ENTRAR</button>
-        <p id="auth-error" style="color: var(--danger-red); font-size: 0.8rem; margin-top: 15px;"></p>
+        <p id="auth-error" style="color: var(--danger-red); font-size: 0.8rem; margin-top: 15px; font-weight: 700;"></p>
     </div>
 </div>
 
 <div id="main-content">
-    <div id="toast"><span>✅</span> Dados sincronizados!</div>
+    <div id="toast"><span>✅</span> Sincronizado com a nuvem</div>
 
     <div id="configModal" class="modal-overlay">
         <div class="modal-content">
             <h3 style="margin:0 0 10px;">Métodos de Pagamento</h3>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 15px;">Pressione ENTER para adicionar</p>
             <input type="text" id="cat-input" class="auth-input" placeholder="Ex: Pix, Crédito...">
-            <div id="tag-box" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
+            <div id="tag-box" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; justify-content: center;"></div>
             <button class="btn-add" onclick="closeModal()" style="width:100%; margin-top:20px;">CONCLUÍDO</button>
         </div>
     </div>
 
     <div id="deleteModal" class="modal-overlay">
         <div class="modal-content">
-            <div style="font-size: 3rem;">🗑️</div>
-            <h3>Remover registro?</h3>
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <button onclick="closeDeleteModal()" style="flex:1; padding:15px; border-radius:12px; border:1px solid var(--border-color); font-weight:800;">MANTER</button>
-                <button id="confirmDeleteBtn" style="flex:1; padding:15px; border-radius:12px; background:var(--danger-red); color:white; border:none; font-weight:800;">REMOVER</button>
+            <div style="font-size: 3.5rem; margin-bottom: 10px;">🗑️</div>
+            <h3 style="margin:0 0 10px;">Remover registro?</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Esta ação não poderá ser desfeita.</p>
+            <div style="display:flex; gap:12px; margin-top:25px;">
+                <button onclick="closeDeleteModal()" style="flex:1; padding:15px; border-radius:14px; border:1px solid var(--border-color); font-weight:800; cursor:pointer; background: var(--bg-body); color: var(--text-main);">MANTER</button>
+                <button id="confirmDeleteBtn" style="flex:1; padding:15px; border-radius:14px; background:var(--danger-red); color:white; border:none; font-weight:800; cursor:pointer;">REMOVER</button>
             </div>
         </div>
     </div>
@@ -112,17 +146,19 @@
     <div class="container">
         <div class="top-controls">
             <select class="month-selector" id="month-picker" onchange="changeMonth()">
-                <option value="jan">Janeiro</option><option value="fev">Fevereiro</option><option value="mar">Março</option>
-                <option value="abr">Abril</option><option value="mai">Maio</option><option value="jun">Junho</option>
-                <option value="jul">Julho</option><option value="ago">Agosto</option><option value="set">Setembro</option>
-                <option value="out">Outubro</option><option value="nov">Novembro</option><option value="dez">Dezembro</option>
+                <option value="jan" class="opt-jan">Janeiro</option><option value="fev" class="opt-fev">Fevereiro</option>
+                <option value="mar" class="opt-mar">Março</option><option value="abr" class="opt-abr">Abril</option>
+                <option value="mai" class="opt-mai">Maio</option><option value="jun" class="opt-jun">Junho</option>
+                <option value="jul" class="opt-jul">Julho</option><option value="ago" class="opt-ago">Agosto</option>
+                <option value="set" class="opt-set">Setembro</option><option value="out" class="opt-out">Outubro</option>
+                <option value="nov" class="opt-nov">Novembro</option><option value="dez" class="opt-dez">Dezembro</option>
             </select>
-            <button class="round-btn" onclick="openConfig()">⚙️</button>
-            <button class="round-btn" onclick="logout()" title="Sair">🚪</button>
+            <button class="round-btn" onclick="openConfig()" title="Configurar Métodos">⚙️</button>
+            <button class="round-btn" onclick="logout()" title="Sair do PIVOT">🚪</button>
         </div>
 
         <header style="text-align: center; margin: 20px 0 30px;">
-            <h1 style="font-size: 2.2rem; font-weight: 800; background: var(--header-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase;">PIVOT - DASHBOARD FINANCEIRO</h1>
+            <h1 style="font-size: 2.2rem; font-weight: 800; background: var(--header-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; letter-spacing: 2px;">PIVOT - DASHBOARD</h1>
         </header>
 
         <div class="dashboard-top">
@@ -134,8 +170,8 @@
                 </div>
             </div>
             <div class="balance-section">
-                <div><span class="label-mini" style="color:white; opacity:0.8;">Folga Financeira</span><h2 id="folga-value" style="font-size:2.6rem; margin:0; font-weight:800;">R$ 0,00</h2></div>
-                <div style="text-align:right; font-size:0.9rem; font-weight:700;"><div>Contas: <span id="stat-total">R$ 0,00</span></div><div>Pago: <span id="stat-pago">R$ 0,00</span></div></div>
+                <div style="flex: 1;"><span class="label-mini" style="color:white; opacity:0.8;">Folga Financeira</span><h2 id="folga-value" style="font-size:2.6rem; margin:0; font-weight:800; transition: var(--transition);">R$ 0,00</h2></div>
+                <div style="text-align:right; font-size:0.9rem; font-weight:700; min-width: 120px;"><div>Contas: <span id="stat-total">R$ 0,00</span></div><div>Pago: <span id="stat-pago">R$ 0,00</span></div></div>
             </div>
         </div>
 
@@ -151,7 +187,7 @@
     </div>
 </div>
 
-<button id="theme-btn" onclick="toggleTheme()" style="position:fixed; bottom:30px; right:30px; width:60px; height:60px; border-radius:50%; background:var(--primary-green); color:white; border:none; cursor:pointer; font-size:1.5rem; z-index:1000; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">🌙</button>
+<button id="theme-btn" onclick="toggleTheme()" style="position:fixed; bottom:30px; right:30px; width:60px; height:60px; border-radius:50%; background:var(--primary-green); color:white; border:none; cursor:pointer; font-size:1.5rem; z-index:1000; box-shadow: 0 10px 20px rgba(0,0,0,0.2); transition: var(--transition);">🌙</button>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
@@ -175,17 +211,17 @@
     let currentUser = null;
     let debtIdToDelete = null;
 
-    // --- AUTH ---
     window.handleAuth = async () => {
         const email = document.getElementById('email').value;
         const pass = document.getElementById('password').value;
         const errEl = document.getElementById('auth-error');
+        if(!email || !pass) { errEl.innerText = "Preencha e-mail e senha"; return; }
         try {
             await signInWithEmailAndPassword(auth, email, pass);
         } catch (e) {
             try {
                 await createUserWithEmailAndPassword(auth, email, pass);
-            } catch (err) { errEl.innerText = "Erro ao entrar/cadastrar: " + err.message; }
+            } catch (err) { errEl.innerText = "Erro: " + err.message; }
         }
     };
 
@@ -194,22 +230,26 @@
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             currentUser = user;
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('main-content').style.display = 'flex';
+            document.getElementById('auth-screen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('auth-screen').style.display = 'none';
+                const main = document.getElementById('main-content');
+                main.style.display = 'flex';
+                setTimeout(() => main.classList.add('visible'), 50);
+            }, 400);
             await loadData();
         } else {
             document.getElementById('auth-screen').style.display = 'flex';
-            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('auth-screen').style.opacity = '1';
+            document.getElementById('main-content').classList.remove('visible');
+            setTimeout(() => document.getElementById('main-content').style.display = 'none', 400);
         }
     });
 
-    // --- DATA ---
     async function loadData() {
         const docRef = doc(db, "users", currentUser.uid);
         const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-            financeData = { ...financeData, ...docSnap.data() };
-        }
+        if (docSnap.exists()) { financeData = { ...financeData, ...docSnap.data() }; }
         applyTheme();
         renderCatsDropdown();
         changeMonth();
@@ -218,24 +258,29 @@
     async function persist() {
         if (!currentUser) return;
         await setDoc(doc(db, "users", currentUser.uid), financeData);
-        showToast();
-    }
-
-    function showToast() {
         const t = document.getElementById('toast');
         t.classList.add('show');
         setTimeout(() => t.classList.remove('show'), 2000);
     }
 
-    // --- UI LOGIC (Mantida do anterior) ---
     function getHue(str) {
         let hash = 0;
         for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
         return Math.abs(hash % 360);
     }
 
-    window.openConfig = () => { document.getElementById('configModal').style.display = 'flex'; renderTags(); };
-    window.closeModal = () => { document.getElementById('configModal').style.display = 'none'; renderCatsDropdown(); persist(); };
+    window.openConfig = () => { 
+        const m = document.getElementById('configModal');
+        m.style.display = 'flex'; 
+        setTimeout(() => m.classList.add('show'), 10);
+        renderTags(); 
+    };
+    window.closeModal = () => { 
+        const m = document.getElementById('configModal');
+        m.classList.remove('show');
+        setTimeout(() => m.style.display = 'none', 300);
+        renderCatsDropdown(); persist(); 
+    };
     
     document.getElementById('cat-input').addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && e.target.value.trim() !== "") {
@@ -249,7 +294,7 @@
     function renderTags() {
         const box = document.getElementById('tag-box');
         box.innerHTML = financeData.categories.map((cat, i) => `
-            <div style="background:hsl(${getHue(cat)}, 60%, 45%); color:white; padding:6px 12px; border-radius:20px; font-size:0.7rem; font-weight:800;">${cat} <span onclick="removeTag(${i})" style="cursor:pointer; margin-left:5px;">✕</span></div>
+            <div style="background:hsl(${getHue(cat)}, 60%, 45%); color:white; padding:8px 14px; border-radius:20px; font-size:0.75rem; font-weight:800; display:flex; align-items:center; gap:8px; animation: popIn 0.3s ease;">${cat} <span onclick="removeTag(${i})" style="cursor:pointer; opacity:0.8;">✕</span></div>
         `).join('');
     }
     window.removeTag = (i) => { financeData.categories.splice(i, 1); renderTags(); };
@@ -257,13 +302,24 @@
 
     window.changeMonth = () => {
         const m = document.getElementById('month-picker').value;
-        document.getElementById('salary-input').value = (financeData.globalSalary || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-        if (!financeData.monthlyData[m]) financeData.monthlyData[m] = { paidIds: [] };
+        const themes = {
+            jan: {bg:'#e0f2fe', txt:'#0369a1'}, fev: {bg:'#fce7f3', txt:'#be185d'},
+            mar: {bg:'#f0fdf4', txt:'#15803d'}, abr: {bg:'#fff7ed', txt:'#c2410c'},
+            mai: {bg:'#faf5ff', txt:'#7e22ce'}, jun: {bg:'#fef2f2', txt:'#b91c1c'},
+            jul: {bg:'#ecfeff', txt:'#0e7490'}, ago: {bg:'#fffbeb', txt:'#b45309'},
+            set: {bg:'#f5f3ff', txt:'#6d28d9'}, out: {bg:'#fdf2f8', txt:'#db2777'},
+            nov: {bg:'#eff6ff', txt:'#1d4ed8'}, dez: {bg:'#ecfdf5', txt:'#047857'}
+        };
+        const picker = document.getElementById('month-picker');
+        picker.style.backgroundColor = themes[m].bg;
+        picker.style.color = themes[m].txt;
+        picker.style.borderColor = themes[m].txt;
         calculate();
     };
 
     function calculate() {
         const m = document.getElementById('month-picker').value;
+        if (!financeData.monthlyData[m]) financeData.monthlyData[m] = { paidIds: [] };
         const monthInfo = financeData.monthlyData[m];
         const list = document.getElementById('debt-list');
         list.innerHTML = '';
@@ -273,7 +329,7 @@
         financeData.categories.forEach(c => catTotals[c] = 0);
         financeData.debts.sort((a, b) => b.value - a.value);
 
-        financeData.debts.forEach((debt) => {
+        financeData.debts.forEach((debt, index) => {
             const isPaid = monthInfo.paidIds.includes(debt.id);
             total += debt.value; 
             if (isPaid) pago += debt.value;
@@ -281,21 +337,21 @@
 
             const card = document.createElement('div');
             card.className = `debt-item ${isPaid ? 'paid' : ''}`;
+            card.style.animationDelay = `${index * 0.05}s`;
             card.style.borderLeft = `6px solid hsl(${getHue(debt.category)}, 60%, 50%)`;
             card.innerHTML = `
-                <input type="checkbox" ${isPaid ? 'checked' : ''} onchange="togglePaid('${debt.id}')" style="width:20px; height:20px;">
+                <input type="checkbox" ${isPaid ? 'checked' : ''} onchange="togglePaid('${debt.id}')" style="width:20px; height:20px; cursor:pointer; accent-color:var(--primary-green);">
                 <div style="flex:1">
-                    <div ondblclick="editField(this, '${debt.id}', 'name')" style="font-weight:700;">${debt.name}</div>
-                    <small ondblclick="editField(this, '${debt.id}', 'category')" style="color:hsl(${getHue(debt.category)}, 60%, 50%); font-weight:800; font-size:0.6rem; text-transform:uppercase;">${debt.category}</small>
+                    <div ondblclick="editField(this, '${debt.id}', 'name')" style="font-weight:700; cursor:pointer;">${debt.name}</div>
+                    <small ondblclick="editField(this, '${debt.id}', 'category')" style="color:hsl(${getHue(debt.category)}, 60%, 50%); font-weight:800; font-size:0.65rem; text-transform:uppercase; cursor:pointer;">${debt.category}</small>
                 </div>
                 <div style="text-align:right">
-                    <div style="color:var(--danger-red); font-weight:800;" ondblclick="editField(this, '${debt.id}', 'value')">${debt.value.toLocaleString('pt-BR', {style:'currency', currency:'BRL'})}</div>
-                    <button onclick="requestRemoveDebt('${debt.id}')" style="background:none; border:none; font-size:0.6rem; color:gray; cursor:pointer;">REMOVER</button>
+                    <div style="color:var(--danger-red); font-weight:800; font-size:1.1rem; cursor:pointer;" ondblclick="editField(this, '${debt.id}', 'value')">${debt.value.toLocaleString('pt-BR', {style:'currency', currency:'BRL'})}</div>
+                    <button onclick="requestRemoveDebt('${debt.id}')" style="background:none; border:none; font-size:0.65rem; color:gray; cursor:pointer; font-weight:700;">REMOVER</button>
                 </div>`;
             list.appendChild(card);
         });
 
-        // Summary pills
         const summaryBox = document.getElementById('cat-summary');
         summaryBox.innerHTML = '';
         for (let cat in catTotals) {
@@ -308,7 +364,8 @@
             }
         }
 
-        const salary = parseCurrency(document.getElementById('salary-input').value);
+        document.getElementById('salary-input').value = (financeData.globalSalary || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        const salary = financeData.globalSalary || 0;
         document.getElementById('folga-value').innerText = (salary - total).toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
         document.getElementById('stat-total').innerText = total.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
         document.getElementById('stat-pago').innerText = pago.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
@@ -359,8 +416,17 @@
         }
     };
 
-    window.requestRemoveDebt = (id) => { debtIdToDelete = id; document.getElementById('deleteModal').style.display = 'flex'; };
-    window.closeDeleteModal = () => { document.getElementById('deleteModal').style.display = 'none'; };
+    window.requestRemoveDebt = (id) => { 
+        debtIdToDelete = id; 
+        const m = document.getElementById('deleteModal');
+        m.style.display = 'flex'; 
+        setTimeout(() => m.classList.add('show'), 10);
+    };
+    window.closeDeleteModal = () => { 
+        const m = document.getElementById('deleteModal');
+        m.classList.remove('show');
+        setTimeout(() => m.style.display = 'none', 300);
+    };
     document.getElementById('confirmDeleteBtn').onclick = async () => {
         financeData.debts = financeData.debts.filter(d => d.id !== debtIdToDelete);
         calculate(); await persist(); closeDeleteModal();
@@ -370,10 +436,7 @@
         let value = input.value.replace(/\D/g, "");
         value = (value / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
         input.value = value;
-        if (input.id === 'salary-input') {
-            financeData.globalSalary = parseCurrency(value);
-            persist(); // Salva salário automático
-        }
+        if (input.id === 'salary-input') { financeData.globalSalary = parseCurrency(value); persist(); }
         calculate();
     };
 
@@ -386,7 +449,6 @@
         else { document.body.classList.add('dark-mode'); btn.innerText = "☀️"; }
     }
 
-    // Init month to current
     const monthsIds = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
     document.getElementById('month-picker').value = monthsIds[new Date().getMonth()];
 </script>
