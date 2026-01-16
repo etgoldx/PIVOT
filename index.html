@@ -30,6 +30,13 @@
         }
 
         body { font-family: 'Quicksand', sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; display: flex; flex-direction: column; align-items: center; transition: all 0.3s ease; min-height: 100vh; }
+        
+        /* Estilo da Tela de Login */
+        #auth-screen { position: fixed; inset: 0; background: var(--bg-body); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .auth-card { background: var(--bg-card); padding: 40px; border-radius: 28px; width: 100%; max-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); text-align: center; border: 1px solid var(--border-color); }
+        .auth-input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--input-bg); font-family: inherit; box-sizing: border-box; }
+        
+        #main-content { display: none; width: 100%; display: flex; flex-direction: column; align-items: center; }
         .container { width: 98%; max-width: 1400px; padding: 20px; box-sizing: border-box; position: relative; }
         
         #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #1b4332; color: #70e000; padding: 15px 30px; border-radius: 50px; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 9999; transition: top 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); display: flex; align-items: center; gap: 10px; border: 1px solid var(--primary-green); }
@@ -38,13 +45,6 @@
         .top-controls { position: absolute; right: 20px; top: 35px; display: flex; align-items: center; gap: 10px; }
         .month-selector { border: 2px solid var(--border-color); padding: 10px 15px; border-radius: 12px; font-family: inherit; font-size: 0.85rem; font-weight: 800; outline: none; cursor: pointer; transition: 0.3s; }
         
-        .opt-jan { background-color: #e0f2fe; color: #0369a1; } .opt-fev { background-color: #fce7f3; color: #be185d; }
-        .opt-mar { background-color: #f0fdf4; color: #15803d; } .opt-abr { background-color: #fff7ed; color: #c2410c; }
-        .opt-mai { background-color: #faf5ff; color: #7e22ce; } .opt-jun { background-color: #fef2f2; color: #b91c1c; }
-        .opt-jul { background-color: #ecfeff; color: #0e7490; } .opt-ago { background-color: #fffbeb; color: #b45309; }
-        .opt-set { background-color: #f5f3ff; color: #6d28d9; } .opt-out { background-color: #fdf2f8; color: #db2777; }
-        .opt-nov { background-color: #eff6ff; color: #1d4ed8; } .opt-dez { background-color: #ecfdf5; color: #047857; }
-
         .round-btn { background: var(--bg-card); border: 1px solid var(--border-color); padding: 10px; border-radius: 50%; cursor: pointer; color: var(--text-main); display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .btn-save { border-color: #ffb100; color: #ffb100; }
 
@@ -59,128 +59,184 @@
         .debt-item { padding: 18px 22px; border-radius: 22px; display: flex; align-items: center; gap: 15px; border: 1.5px solid var(--border-color); background: var(--bg-card); transition: transform 0.2s; position: relative; }
         .debt-item.paid { background-color: var(--paid-bg) !important; border-color: transparent !important; opacity: 0.6; }
         
-        .btn-add { 
-            background: var(--header-gradient); color: #fff; border: none; padding: 0 25px; height: 50px; border-radius: 14px; 
-            font-weight: 800; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-            transition: all 0.3s; box-shadow: 0 8px 20px var(--btn-shadow); text-transform: uppercase;
-        }
+        .btn-add { background: var(--header-gradient); color: #fff; border: none; padding: 0 25px; height: 50px; border-radius: 14px; font-weight: 800; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; box-shadow: 0 8px 20px var(--btn-shadow); text-transform: uppercase; }
 
-        .add-form { 
-            background: var(--bg-card); padding: 20px; border-radius: 20px; margin-top: 40px; 
-            border: 1px solid var(--border-color); display: flex; flex-direction: row; gap: 15px; align-items: flex-end; width: 100%; box-sizing: border-box;
-        }
+        .add-form { background: var(--bg-card); padding: 20px; border-radius: 20px; margin-top: 40px; border: 1px solid var(--border-color); display: flex; flex-direction: row; gap: 15px; align-items: flex-end; width: 100%; box-sizing: border-box; }
         .form-group { display: flex; flex-direction: column; gap: 5px; flex: 1; }
         .add-form input, .add-form select { padding: 14px; border: 1.5px solid var(--border-color); border-radius: 12px; background: var(--input-bg); color: var(--text-main); font-family: inherit; width: 100%; box-sizing: border-box; }
         .label-mini { font-size:0.6rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; margin-left: 5px;}
 
-        /* Estilo dos Modais */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 5000; }
         .modal-content { background: var(--bg-card); padding: 30px; border-radius: 28px; width: 90%; max-width: 400px; border: 1px solid var(--border-color); text-align: center; }
-        .tag-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; min-height: 50px; padding: 10px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--input-bg); }
-        .tag { display: flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; color: white; }
-
-        /* Botões do Alerta de Remoção */
-        .confirm-btns { display: flex; gap: 10px; margin-top: 25px; }
-        .btn-cancel { flex: 1; background: var(--input-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 15px; border-radius: 14px; font-weight: 800; cursor: pointer; }
-        .btn-confirm-delete { flex: 1; background: var(--danger-red); color: white; border: none; padding: 15px; border-radius: 14px; font-weight: 800; cursor: pointer; }
-
+        
         @media (max-width: 1200px) { #debt-list { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 768px) { 
-            #debt-list { grid-template-columns: 1fr; } 
-            .add-form { flex-direction: column; align-items: stretch; } 
-            .top-controls { position: relative; top:0; right:0; margin-bottom: 20px; }
-        }
+        @media (max-width: 768px) { #debt-list { grid-template-columns: 1fr; } .add-form { flex-direction: column; align-items: stretch; } .top-controls { position: relative; top:0; right:0; margin-bottom: 20px; } }
     </style>
 </head>
 <body>
 
-<div id="toast"><span>✅</span> Dados salvos com sucesso!</div>
-
-<div id="configModal" class="modal-overlay">
-    <div class="modal-content">
-        <h3 style="margin:0 0 10px;">Métodos de Pagamento</h3>
-        <p style="font-size: 0.8rem; color: var(--text-muted);">Digite o nome e pressione <b>ENTER</b></p>
-        <input type="text" id="cat-input" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-main); box-sizing: border-box;" placeholder="Ex: Pix, Crédito...">
-        <div class="tag-container" id="tag-box"></div>
-        <button class="btn-add" onclick="closeModal()" style="width:100%; margin-top:20px; height:50px;">CONCLUÍDO</button>
+<div id="auth-screen">
+    <div class="auth-card">
+        <h1 style="margin:0 0 10px; font-weight: 800;">PIVOT</h1>
+        <p style="color: var(--text-muted); margin-bottom: 30px;">Acesse seu controle financeiro</p>
+        <input type="email" id="email" class="auth-input" placeholder="Seu e-mail">
+        <input type="password" id="password" class="auth-input" placeholder="Sua senha">
+        <button class="btn-add" onclick="handleAuth()" style="width: 100%; margin-top: 10px;">CADASTRAR / ENTRAR</button>
+        <p id="auth-error" style="color: var(--danger-red); font-size: 0.8rem; margin-top: 15px;"></p>
     </div>
 </div>
 
-<div id="deleteModal" class="modal-overlay">
-    <div class="modal-content">
-        <div style="font-size: 3rem; margin-bottom: 10px;">🗑️</div>
-        <h3 style="margin:0 0 10px;">Remover registro?</h3>
-        <p style="font-size: 0.9rem; color: var(--text-muted);">Deseja remover este registro do seu controle? Esta ação não pode ser desfeita.</p>
-        <div class="confirm-btns">
-            <button class="btn-cancel" onclick="closeDeleteModal()">MANTER</button>
-            <button class="btn-confirm-delete" id="confirmDeleteBtn">REMOVER</button>
+<div id="main-content">
+    <div id="toast"><span>✅</span> Dados sincronizados!</div>
+
+    <div id="configModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="margin:0 0 10px;">Métodos de Pagamento</h3>
+            <input type="text" id="cat-input" class="auth-input" placeholder="Ex: Pix, Crédito...">
+            <div id="tag-box" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
+            <button class="btn-add" onclick="closeModal()" style="width:100%; margin-top:20px;">CONCLUÍDO</button>
+        </div>
+    </div>
+
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-content">
+            <div style="font-size: 3rem;">🗑️</div>
+            <h3>Remover registro?</h3>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button onclick="closeDeleteModal()" style="flex:1; padding:15px; border-radius:12px; border:1px solid var(--border-color); font-weight:800;">MANTER</button>
+                <button id="confirmDeleteBtn" style="flex:1; padding:15px; border-radius:12px; background:var(--danger-red); color:white; border:none; font-weight:800;">REMOVER</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="top-controls">
+            <select class="month-selector" id="month-picker" onchange="changeMonth()">
+                <option value="jan">Janeiro</option><option value="fev">Fevereiro</option><option value="mar">Março</option>
+                <option value="abr">Abril</option><option value="mai">Maio</option><option value="jun">Junho</option>
+                <option value="jul">Julho</option><option value="ago">Agosto</option><option value="set">Setembro</option>
+                <option value="out">Outubro</option><option value="nov">Novembro</option><option value="dez">Dezembro</option>
+            </select>
+            <button class="round-btn" onclick="openConfig()">⚙️</button>
+            <button class="round-btn" onclick="logout()" title="Sair">🚪</button>
+        </div>
+
+        <header style="text-align: center; margin: 20px 0 30px;">
+            <h1 style="font-size: 2.2rem; font-weight: 800; background: var(--header-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase;">PIVOT - DASHBOARD FINANCEIRO</h1>
+        </header>
+
+        <div class="dashboard-top">
+            <div class="salary-section">
+                <span class="label-mini">SALÁRIO MENSAL</span>
+                <div style="display: flex; align-items: center; background: rgba(0,0,0,0.05); padding: 10px 18px; border-radius: 14px; margin-top:10px; border: 1px solid var(--border-color);">
+                    <span style="color: var(--primary-green); font-weight:800; margin-right:5px;">R$</span>
+                    <input type="text" id="salary-input" style="border:none; background:transparent; color:var(--text-main); font-size:1.6rem; font-weight:800; width:100%; text-align:right; outline:none;" oninput="handleMoneyInput(this)">
+                </div>
+            </div>
+            <div class="balance-section">
+                <div><span class="label-mini" style="color:white; opacity:0.8;">Folga Financeira</span><h2 id="folga-value" style="font-size:2.6rem; margin:0; font-weight:800;">R$ 0,00</h2></div>
+                <div style="text-align:right; font-size:0.9rem; font-weight:700;"><div>Contas: <span id="stat-total">R$ 0,00</span></div><div>Pago: <span id="stat-pago">R$ 0,00</span></div></div>
+            </div>
+        </div>
+
+        <div class="category-summary" id="cat-summary"></div>
+        <div id="debt-list"></div>
+
+        <div class="add-form">
+            <div class="form-group"><label class="label-mini">Descrição</label><input type="text" id="new-name" placeholder="Ex: Aluguel"></div>
+            <div class="form-group"><label class="label-mini">Valor</label><input type="text" id="new-value" oninput="handleMoneyInput(this)" placeholder="R$ 0,00"></div>
+            <div class="form-group"><label class="label-mini">Método</label><select id="new-category"></select></div>
+            <button class="btn-add" onclick="addNewDebt()">➕ ADICIONAR</button>
         </div>
     </div>
 </div>
 
 <button id="theme-btn" onclick="toggleTheme()" style="position:fixed; bottom:30px; right:30px; width:60px; height:60px; border-radius:50%; background:var(--primary-green); color:white; border:none; cursor:pointer; font-size:1.5rem; z-index:1000; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">🌙</button>
 
-<div class="container">
-    <div class="top-controls">
-        <select class="month-selector" id="month-picker" onchange="changeMonth()">
-            <option value="jan" class="opt-jan">Janeiro</option><option value="fev" class="opt-fev">Fevereiro</option>
-            <option value="mar" class="opt-mar">Março</option><option value="abr" class="opt-abr">Abril</option>
-            <option value="mai" class="opt-mai">Maio</option><option value="jun" class="opt-jun">Junho</option>
-            <option value="jul" class="opt-jul">Julho</option><option value="ago" class="opt-ago">Agosto</option>
-            <option value="set" class="opt-set">Setembro</option><option value="out" class="opt-out">Outubro</option>
-            <option value="nov" class="opt-nov">Novembro</option><option value="dez" class="opt-dez">Dezembro</option>
-        </select>
-        <button class="round-btn btn-save" onclick="manualSave()">💾</button>
-        <button class="round-btn" onclick="openConfig()">⚙️</button>
-    </div>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-    <header style="text-align: center; margin: 20px 0 30px;">
-        <h1 style="font-size: 2.2rem; font-weight: 800; background: var(--header-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase;">PIVOT - DASHBOARD FINANCEIRO</h1>
-    </header>
-
-    <div class="dashboard-top">
-        <div class="salary-section">
-            <span class="label-mini">SALÁRIO MENSAL</span>
-            <div style="display: flex; align-items: center; background: rgba(0,0,0,0.05); padding: 10px 18px; border-radius: 14px; margin-top:10px; border: 1px solid var(--border-color);">
-                <span style="color: var(--primary-green); font-weight:800; margin-right:5px;">R$</span>
-                <input type="text" id="salary-input" style="border:none; background:transparent; color:var(--text-main); font-size:1.6rem; font-weight:800; width:100%; text-align:right; outline:none;" oninput="handleMoneyInput(this)">
-            </div>
-        </div>
-        <div class="balance-section">
-            <div><span class="label-mini" style="color:white; opacity:0.8;">Folga Financeira</span><h2 id="folga-value" style="font-size:2.6rem; margin:0; font-weight:800;">R$ 0,00</h2></div>
-            <div style="text-align:right; font-size:0.9rem; font-weight:700;"><div>Contas: <span id="stat-total">R$ 0,00</span></div><div>Pago: <span id="stat-pago">R$ 0,00</span></div></div>
-        </div>
-    </div>
-
-    <div class="category-summary" id="cat-summary"></div>
-
-    <div id="debt-list"></div>
-
-    <div class="add-form">
-        <div class="form-group"><label class="label-mini">Descrição</label><input type="text" id="new-name" placeholder="Ex: Aluguel"></div>
-        <div class="form-group"><label class="label-mini">Valor</label><input type="text" id="new-value" oninput="handleMoneyInput(this)" placeholder="R$ 0,00"></div>
-        <div class="form-group"><label class="label-mini">Método</label><select id="new-category"></select></div>
-        <button class="btn-add" onclick="addNewDebt()"><span>➕</span> ADICIONAR</button>
-    </div>
-</div>
-
-<script>
-    let financeData = JSON.parse(localStorage.getItem('alvorada_v12')) || {
-        categories: ["Nubank", "Inter", "Pix", "Dinheiro"],
-        debts: [], monthlyData: {}, lightMode: true, globalSalary: 0 
+    const firebaseConfig = {
+        apiKey: "AIzaSyAX5nWuxp4zFm0uYkNGuD4bYS_TpUFTbSo",
+        authDomain: "pivot-6df25.firebaseapp.com",
+        projectId: "pivot-6df25",
+        storageBucket: "pivot-6df25.firebasestorage.app",
+        messagingSenderId: "807771695926",
+        appId: "1:807771695926:web:0c5bb3c69ae9cbce7f6197"
     };
 
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let financeData = { categories: ["Nubank", "Inter", "Pix", "Dinheiro"], debts: [], monthlyData: {}, lightMode: true, globalSalary: 0 };
+    let currentUser = null;
     let debtIdToDelete = null;
 
+    // --- AUTH ---
+    window.handleAuth = async () => {
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('password').value;
+        const errEl = document.getElementById('auth-error');
+        try {
+            await signInWithEmailAndPassword(auth, email, pass);
+        } catch (e) {
+            try {
+                await createUserWithEmailAndPassword(auth, email, pass);
+            } catch (err) { errEl.innerText = "Erro ao entrar/cadastrar: " + err.message; }
+        }
+    };
+
+    window.logout = () => signOut(auth);
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            currentUser = user;
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('main-content').style.display = 'flex';
+            await loadData();
+        } else {
+            document.getElementById('auth-screen').style.display = 'flex';
+            document.getElementById('main-content').style.display = 'none';
+        }
+    });
+
+    // --- DATA ---
+    async function loadData() {
+        const docRef = doc(db, "users", currentUser.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            financeData = { ...financeData, ...docSnap.data() };
+        }
+        applyTheme();
+        renderCatsDropdown();
+        changeMonth();
+    }
+
+    async function persist() {
+        if (!currentUser) return;
+        await setDoc(doc(db, "users", currentUser.uid), financeData);
+        showToast();
+    }
+
+    function showToast() {
+        const t = document.getElementById('toast');
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2000);
+    }
+
+    // --- UI LOGIC (Mantida do anterior) ---
     function getHue(str) {
         let hash = 0;
         for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
         return Math.abs(hash % 360);
     }
 
-    function openConfig() { document.getElementById('configModal').style.display = 'flex'; renderTags(); }
-    function closeModal() { document.getElementById('configModal').style.display = 'none'; renderCatsDropdown(); persist(); }
-
+    window.openConfig = () => { document.getElementById('configModal').style.display = 'flex'; renderTags(); };
+    window.closeModal = () => { document.getElementById('configModal').style.display = 'none'; renderCatsDropdown(); persist(); };
+    
     document.getElementById('cat-input').addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && e.target.value.trim() !== "") {
             const val = e.target.value.trim();
@@ -193,31 +249,18 @@
     function renderTags() {
         const box = document.getElementById('tag-box');
         box.innerHTML = financeData.categories.map((cat, i) => `
-            <div class="tag" style="background: hsl(${getHue(cat)}, 60%, 45%)">${cat} <span onclick="removeTag(${i})" style="cursor:pointer; margin-left:8px;">✕</span></div>
+            <div style="background:hsl(${getHue(cat)}, 60%, 45%); color:white; padding:6px 12px; border-radius:20px; font-size:0.7rem; font-weight:800;">${cat} <span onclick="removeTag(${i})" style="cursor:pointer; margin-left:5px;">✕</span></div>
         `).join('');
     }
-    function removeTag(i) { financeData.categories.splice(i, 1); renderTags(); }
+    window.removeTag = (i) => { financeData.categories.splice(i, 1); renderTags(); };
     function renderCatsDropdown() { document.getElementById('new-category').innerHTML = financeData.categories.map(c => `<option value="${c}">${c}</option>`).join(""); }
 
-    function changeMonth() {
+    window.changeMonth = () => {
         const m = document.getElementById('month-picker').value;
-        const themes = {
-            jan: {bg:'#e0f2fe', txt:'#0369a1'}, fev: {bg:'#fce7f3', txt:'#be185d'},
-            mar: {bg:'#f0fdf4', txt:'#15803d'}, abr: {bg:'#fff7ed', txt:'#c2410c'},
-            mai: {bg:'#faf5ff', txt:'#7e22ce'}, jun: {bg:'#fef2f2', txt:'#b91c1c'},
-            jul: {bg:'#ecfeff', txt:'#0e7490'}, ago: {bg:'#fffbeb', txt:'#b45309'},
-            set: {bg:'#f5f3ff', txt:'#6d28d9'}, out: {bg:'#fdf2f8', txt:'#db2777'},
-            nov: {bg:'#eff6ff', txt:'#1d4ed8'}, dez: {bg:'#ecfdf5', txt:'#047857'}
-        };
-        const picker = document.getElementById('month-picker');
-        picker.style.backgroundColor = themes[m].bg;
-        picker.style.color = themes[m].txt;
-        picker.style.borderColor = themes[m].txt;
-
         document.getElementById('salary-input').value = (financeData.globalSalary || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
         if (!financeData.monthlyData[m]) financeData.monthlyData[m] = { paidIds: [] };
         calculate();
-    }
+    };
 
     function calculate() {
         const m = document.getElementById('month-picker').value;
@@ -228,7 +271,6 @@
         let catTotals = {};
 
         financeData.categories.forEach(c => catTotals[c] = 0);
-        
         financeData.debts.sort((a, b) => b.value - a.value);
 
         financeData.debts.forEach((debt) => {
@@ -241,18 +283,19 @@
             card.className = `debt-item ${isPaid ? 'paid' : ''}`;
             card.style.borderLeft = `6px solid hsl(${getHue(debt.category)}, 60%, 50%)`;
             card.innerHTML = `
-                <input type="checkbox" ${isPaid ? 'checked' : ''} onchange="togglePaid('${debt.id}')" style="width:22px; height:22px; cursor:pointer; accent-color:var(--primary-green);">
+                <input type="checkbox" ${isPaid ? 'checked' : ''} onchange="togglePaid('${debt.id}')" style="width:20px; height:20px;">
                 <div style="flex:1">
-                    <div ondblclick="editField(this, '${debt.id}', 'name')" style="cursor:pointer; font-weight:700;">${debt.name}</div>
-                    <small ondblclick="editField(this, '${debt.id}', 'category')" style="cursor:pointer; font-weight:800; color:hsl(${getHue(debt.category)}, 60%, 50%); text-transform:uppercase; font-size:0.65rem;">${debt.category}</small>
+                    <div ondblclick="editField(this, '${debt.id}', 'name')" style="font-weight:700;">${debt.name}</div>
+                    <small ondblclick="editField(this, '${debt.id}', 'category')" style="color:hsl(${getHue(debt.category)}, 60%, 50%); font-weight:800; font-size:0.6rem; text-transform:uppercase;">${debt.category}</small>
                 </div>
                 <div style="text-align:right">
-                    <div style="color:var(--danger-red); font-weight:800; font-size:1.1rem; cursor:pointer;" ondblclick="editField(this, '${debt.id}', 'value')">${debt.value.toLocaleString('pt-BR', {style:'currency', currency:'BRL'})}</div>
-                    <button onclick="requestRemoveDebt('${debt.id}')" style="background:none; border:none; color:gray; font-size:0.6rem; cursor:pointer; font-weight:700;">REMOVER</button>
+                    <div style="color:var(--danger-red); font-weight:800;" ondblclick="editField(this, '${debt.id}', 'value')">${debt.value.toLocaleString('pt-BR', {style:'currency', currency:'BRL'})}</div>
+                    <button onclick="requestRemoveDebt('${debt.id}')" style="background:none; border:none; font-size:0.6rem; color:gray; cursor:pointer;">REMOVER</button>
                 </div>`;
             list.appendChild(card);
         });
 
+        // Summary pills
         const summaryBox = document.getElementById('cat-summary');
         summaryBox.innerHTML = '';
         for (let cat in catTotals) {
@@ -271,16 +314,14 @@
         document.getElementById('stat-pago').innerText = pago.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
     }
 
-    function editField(el, id, field) {
+    window.editField = (el, id, field) => {
         const index = financeData.debts.findIndex(d => d.id === id);
         const oldValue = financeData.debts[index][field];
         let input;
-
         if (field === 'category') {
             input = document.createElement('select');
             financeData.categories.forEach(c => {
-                const opt = document.createElement('option');
-                opt.value = c; opt.text = c;
+                const opt = document.createElement('option'); opt.value = c; opt.text = c;
                 if (c === oldValue) opt.selected = true;
                 input.appendChild(opt);
             });
@@ -288,95 +329,66 @@
             input = document.createElement('input');
             input.value = field === 'value' ? oldValue.toLocaleString('pt-BR', {minimumFractionDigits:2}) : oldValue;
         }
-
         el.innerHTML = ''; el.appendChild(input); input.focus();
-
-        const save = () => {
+        const save = async () => {
             let newVal = input.value;
-            if (field === 'value') { 
-                newVal = parseCurrency(newVal); 
-                if (isNaN(newVal)) newVal = oldValue; 
-            } else if (field === 'name') {
-                newVal = newVal.toUpperCase();
-            }
-            financeData.debts[index][field] = newVal; 
-            calculate(); persist();
+            if (field === 'value') newVal = parseCurrency(newVal);
+            else if (field === 'name') newVal = newVal.toUpperCase();
+            financeData.debts[index][field] = newVal;
+            calculate(); await persist();
         };
-
         input.onblur = save;
         input.onkeydown = (e) => { if(e.key === 'Enter') save(); };
-    }
+    };
 
-    function togglePaid(id) {
+    window.togglePaid = async (id) => {
         const m = document.getElementById('month-picker').value;
         const idx = financeData.monthlyData[m].paidIds.indexOf(id);
         if (idx > -1) financeData.monthlyData[m].paidIds.splice(idx, 1);
         else financeData.monthlyData[m].paidIds.push(id);
-        calculate(); persist();
-    }
+        calculate(); await persist();
+    };
 
-    function addNewDebt() {
+    window.addNewDebt = async () => {
         const name = document.getElementById('new-name').value;
         const val = parseCurrency(document.getElementById('new-value').value);
         if (name && val > 0) {
             financeData.debts.push({ id: Date.now().toString(), name: name.toUpperCase(), value: val, category: document.getElementById('new-category').value });
             document.getElementById('new-name').value = ''; document.getElementById('new-value').value = '';
-            calculate(); persist();
-        }
-    }
-
-    // Gerenciamento do Modal de Remoção
-    function requestRemoveDebt(id) {
-        debtIdToDelete = id;
-        document.getElementById('deleteModal').style.display = 'flex';
-    }
-
-    function closeDeleteModal() {
-        debtIdToDelete = null;
-        document.getElementById('deleteModal').style.display = 'none';
-    }
-
-    document.getElementById('confirmDeleteBtn').onclick = () => {
-        if (debtIdToDelete) {
-            financeData.debts = financeData.debts.filter(d => d.id !== debtIdToDelete);
-            calculate(); persist();
-            closeDeleteModal();
+            calculate(); await persist();
         }
     };
 
-    function manualSave() {
-        financeData.globalSalary = parseCurrency(document.getElementById('salary-input').value);
-        persist();
-        const toast = document.getElementById('toast');
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 3000);
-    }
+    window.requestRemoveDebt = (id) => { debtIdToDelete = id; document.getElementById('deleteModal').style.display = 'flex'; };
+    window.closeDeleteModal = () => { document.getElementById('deleteModal').style.display = 'none'; };
+    document.getElementById('confirmDeleteBtn').onclick = async () => {
+        financeData.debts = financeData.debts.filter(d => d.id !== debtIdToDelete);
+        calculate(); await persist(); closeDeleteModal();
+    };
 
-    function persist() { localStorage.setItem('alvorada_v12', JSON.stringify(financeData)); }
-    function parseCurrency(v) { return Number(v.toString().replace(/\D/g, "")) / 100; }
-    
-    function handleMoneyInput(input) {
+    window.handleMoneyInput = (input) => {
         let value = input.value.replace(/\D/g, "");
         value = (value / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
         input.value = value;
-        if (input.id === 'salary-input') financeData.globalSalary = parseCurrency(value);
+        if (input.id === 'salary-input') {
+            financeData.globalSalary = parseCurrency(value);
+            persist(); // Salva salário automático
+        }
         calculate();
-    }
-    
-    function toggleTheme() { financeData.lightMode = !financeData.lightMode; applyTheme(); persist(); }
+    };
+
+    function parseCurrency(v) { return Number(v.toString().replace(/\D/g, "")) / 100; }
+
+    window.toggleTheme = () => { financeData.lightMode = !financeData.lightMode; applyTheme(); persist(); };
     function applyTheme() {
         const btn = document.getElementById('theme-btn');
         if (financeData.lightMode) { document.body.classList.remove('dark-mode'); btn.innerText = "🌙"; } 
         else { document.body.classList.add('dark-mode'); btn.innerText = "☀️"; }
     }
 
-    window.onload = () => {
-        applyTheme();
-        renderCatsDropdown();
-        const monthsIds = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
-        document.getElementById('month-picker').value = monthsIds[new Date().getMonth()];
-        changeMonth();
-    };
+    // Init month to current
+    const monthsIds = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+    document.getElementById('month-picker').value = monthsIds[new Date().getMonth()];
 </script>
 </body>
 </html>
