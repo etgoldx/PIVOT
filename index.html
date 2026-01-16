@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>PIVOT</title>
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📈</text></svg>">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1b4332">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%231b4332%22 rx=%2220%22/><text x=%2210%22 y=%2275%22 font-size=%2270%22>📈</text></svg>">
+
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #f4f7f6; --bg-card: #ffffff; --primary-green: #1b4332;
+            --text-main: #081c15; --text-muted: #52796f; --danger-red: #e63946;
+            --paid-bg: #e9f5db; --paid-text: #2d6a4f; --border-color: #e0e6e4;
+            --header-gradient: linear-gradient(135deg, #1b4332, #2d6a4f);
+            --input-bg: #f9fbfb; --btn-shadow: rgba(27, 67, 50, 0.1);
+        }
+
+        body.dark-mode {
+            --bg-body: #0b1011; --bg-card: #151c1e; --primary-green: #38b000;
+            --text-main: #ffffff; --text-muted: #cbd5e1; --danger-red: #ff5d5d;
+            --paid-bg: #1a2e1a; --paid-text: #aacc00; --border-color: #334144;
+            --header-gradient: linear-gradient(135deg, #70e000, #38b000);
+            --input-bg: #0b1011; --btn-shadow: rgba(56, 176, 0, 0.4);
+        }
+
+        body { font-family: 'Quicksand', sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; display: flex; flex-direction: column; align-items: center; transition: all 0.3s ease; min-height: 100vh; }
+        .container { width: 98%; max-width: 1400px; padding: 20px; box-sizing: border-box; position: relative; }
+        
+        #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #1b4332; color: #70e000; padding: 15px 30px; border-radius: 50px; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 9999; transition: top 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); display: flex; align-items: center; gap: 10px; border: 1px solid var(--primary-green); }
+        #toast.show { top: 30px; }
+
+        .top-controls { position: absolute; right: 20px; top: 35px; display: flex; align-items: center; gap: 10px; }
+        .month-selector { border: 2px solid var(--border-color); padding: 10px 15px; border-radius: 12px; font-family: inherit; font-size: 0.85rem; font-weight: 800; outline: none; cursor: pointer; transition: 0.3s; }
+        
+        .opt-jan { background-color: #e0f2fe; color: #0369a1; } .opt-fev { background-color: #fce7f3; color: #be185d; }
+        .opt-mar { background-color: #f0fdf4; color: #15803d; } .opt-abr { background-color: #fff7ed; color: #c2410c; }
+        .opt-mai { background-color: #faf5ff; color: #7e22ce; } .opt-jun { background-color: #fef2f2; color: #b91c1c; }
+        .opt-jul { background-color: #ecfeff; color: #0e7490; } .opt-ago { background-color: #fffbeb; color: #b45309; }
+        .opt-set { background-color: #f5f3ff; color: #6d28d9; } .opt-out { background-color: #fdf2f8; color: #db2777; }
+        .opt-nov { background-color: #eff6ff; color: #1d4ed8; } .opt-dez { background-color: #ecfdf5; color: #047857; }
+
+        .round-btn { background: var(--bg-card); border: 1px solid var(--border-color); padding: 10px; border-radius: 50%; cursor: pointer; color: var(--text-main); display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn-save { border-color: #ffb100; color: #ffb100; }
+
+        .dashboard-top { display: flex; align-items: stretch; background: var(--bg-card); border-radius: 24px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.05); margin-bottom: 25px; border: 1px solid var(--border-color); }
+        .salary-section { padding: 25px 35px; background: rgba(0,0,0,0.02); border-right: 1px dashed var(--border-color); min-width: 280px; }
+        .balance-section { flex: 1; padding: 25px 40px; background: var(--header-gradient); color: white; display: flex; justify-content: space-between; align-items: center; }
+
+        .category-summary { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 30px; width: 100%; justify-content: center; }
+        .cat-pill { padding: 10px 20px; border-radius: 50px; color: white; font-size: 0.85rem; font-weight: 800; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: none; }
+
+        #debt-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; width: 100%; }
+        .debt-item { padding: 18px 22px; border-radius: 22px; display: flex; align-items: center; gap: 15px; border: 1.5px solid var(--border-color); background: var(--bg-card); transition: transform 0.2s; position: relative; }
+        .debt-item.paid { background-color: var(--paid-bg) !important; border-color: transparent !important; opacity: 0.6; }
+        
+        .btn-add { 
+            background: var(--header-gradient); color: #fff; border: none; padding: 0 25px; height: 50px; border-radius: 14px; 
+            font-weight: 800; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: all 0.3s; box-shadow: 0 8px 20px var(--btn-shadow); text-transform: uppercase;
+        }
+
+        .add-form { 
+            background: var(--bg-card); padding: 20px; border-radius: 20px; margin-top: 40px; 
+            border: 1px solid var(--border-color); display: flex; flex-direction: row; gap: 15px; align-items: flex-end; width: 100%; box-sizing: border-box;
+        }
+        .form-group { display: flex; flex-direction: column; gap: 5px; flex: 1; }
+        .add-form input, .add-form select { padding: 14px; border: 1.5px solid var(--border-color); border-radius: 12px; background: var(--input-bg); color: var(--text-main); font-family: inherit; width: 100%; box-sizing: border-box; }
+        .label-mini { font-size:0.6rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; margin-left: 5px;}
+
+        /* Estilo dos Modais */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 5000; }
+        .modal-content { background: var(--bg-card); padding: 30px; border-radius: 28px; width: 90%; max-width: 400px; border: 1px solid var(--border-color); text-align: center; }
+        .tag-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; min-height: 50px; padding: 10px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--input-bg); }
+        .tag { display: flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; color: white; }
+
+        /* Botões do Alerta de Remoção */
+        .confirm-btns { display: flex; gap: 10px; margin-top: 25px; }
+        .btn-cancel { flex: 1; background: var(--input-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 15px; border-radius: 14px; font-weight: 800; cursor: pointer; }
+        .btn-confirm-delete { flex: 1; background: var(--danger-red); color: white; border: none; padding: 15px; border-radius: 14px; font-weight: 800; cursor: pointer; }
+
+        @media (max-width: 1200px) { #debt-list { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) { 
+            #debt-list { grid-template-columns: 1fr; } 
+            .add-form { flex-direction: column; align-items: stretch; } 
+            .top-controls { position: relative; top:0; right:0; margin-bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="toast"><span>✅</span> Dados salvos com sucesso!</div>
+
+<div id="configModal" class="modal-overlay">
+    <div class="modal-content">
+        <h3 style="margin:0 0 10px;">Métodos de Pagamento</h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">Digite o nome e pressione <b>ENTER</b></p>
+        <input type="text" id="cat-input" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-main); box-sizing: border-box;" placeholder="Ex: Pix, Crédito...">
+        <div class="tag-container" id="tag-box"></div>
+        <button class="btn-add" onclick="closeModal()" style="width:100%; margin-top:20px; height:50px;">CONCLUÍDO</button>
+    </div>
+</div>
+
+<div id="deleteModal" class="modal-overlay">
+    <div class="modal-content">
+        <div style="font-size: 3rem; margin-bottom: 10px;">🗑️</div>
+        <h3 style="margin:0 0 10px;">Remover registro?</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted);">Deseja remover este registro do seu controle? Esta ação não pode ser desfeita.</p>
+        <div class="confirm-btns">
+            <button class="btn-cancel" onclick="closeDeleteModal()">MANTER</button>
+            <button class="btn-confirm-delete" id="confirmDeleteBtn">REMOVER</button>
+        </div>
+    </div>
+</div>
+
+<button id="theme-btn" onclick="toggleTheme()" style="position:fixed; bottom:30px; right:30px; width:60px; height:60px; border-radius:50%; background:var(--primary-green); color:white; border:none; cursor:pointer; font-size:1.5rem; z-index:1000; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">🌙</button>
+
+<div class="container">
+    <div class="top-controls">
+        <select class="month-selector" id="month-picker" onchange="changeMonth()">
+            <option value="jan" class="opt-jan">Janeiro</option><option value="fev" class="opt-fev">Fevereiro</option>
+            <option value="mar" class="opt-mar">Março</option><option value="abr" class="opt-abr">Abril</option>
+            <option value="mai" class="opt-mai">Maio</option><option value="jun" class="opt-jun">Junho</option>
+            <option value="jul" class="opt-jul">Julho</option><option value="ago" class="opt-ago">Agosto</option>
+            <option value="set" class="opt-set">Setembro</option><option value="out" class="opt-out">Outubro</option>
+            <option value="nov" class="opt-nov">Novembro</option><option value="dez" class="opt-dez">Dezembro</option>
+        </select>
+        <button class="round-btn btn-save" onclick="manualSave()">💾</button>
+        <button class="round-btn" onclick="openConfig()">⚙️</button>
+    </div>
+
+    <header style="text-align: center; margin: 20px 0 30px;">
+        <h1 style="font-size: 2.2rem; font-weight: 800; background: var(--header-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase;">PIVOT - DASHBOARD FINANCEIRO</h1>
+    </header>
+
+    <div class="dashboard-top">
+        <div class="salary-section">
+            <span class="label-mini">SALÁRIO MENSAL</span>
+            <div style="display: flex; align-items: center; background: rgba(0,0,0,0.05); padding: 10px 18px; border-radius: 14px; margin-top:10px; border: 1px solid var(--border-color);">
+                <span style="color: var(--primary-green); font-weight:800; margin-right:5px;">R$</span>
+                <input type="text" id="salary-input" style="border:none; background:transparent; color:var(--text-main); font-size:1.6rem; font-weight:800; width:100%; text-align:right; outline:none;" oninput="handleMoneyInput(this)">
+            </div>
+        </div>
+        <div class="balance-section">
+            <div><span class="label-mini" style="color:white; opacity:0.8;">Folga Financeira</span><h2 id="folga-value" style="font-size:2.6rem; margin:0; font-weight:800;">R$ 0,00</h2></div>
+            <div style="text-align:right; font-size:0.9rem; font-weight:700;"><div>Contas: <span id="stat-total">R$ 0,00</span></div><div>Pago: <span id="stat-pago">R$ 0,00</span></div></div>
+        </div>
+    </div>
+
+    <div class="category-summary" id="cat-summary"></div>
+
+    <div id="debt-list"></div>
+
+    <div class="add-form">
+        <div class="form-group"><label class="label-mini">Descrição</label><input type="text" id="new-name" placeholder="Ex: Aluguel"></div>
+        <div class="form-group"><label class="label-mini">Valor</label><input type="text" id="new-value" oninput="handleMoneyInput(this)" placeholder="R$ 0,00"></div>
+        <div class="form-group"><label class="label-mini">Método</label><select id="new-category"></select></div>
+        <button class="btn-add" onclick="addNewDebt()"><span>➕</span> ADICIONAR</button>
+    </div>
+</div>
+
+<script>
+    let financeData = JSON.parse(localStorage.getItem('alvorada_v12')) || {
+        categories: ["Nubank", "Inter", "Pix", "Dinheiro"],
+        debts: [], monthlyData: {}, lightMode: true, globalSalary: 0 
+    };
+
+    let debtIdToDelete = null;
+
+    function getHue(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        return Math.abs(hash % 360);
+    }
+
+    function openConfig() { document.getElementById('configModal').style.display = 'flex'; renderTags(); }
+    function closeModal() { document.getElementById('configModal').style.display = 'none'; renderCatsDropdown(); persist(); }
+
+    document.getElementById('cat-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && e.target.value.trim() !== "") {
+            const val = e.target.value.trim();
+            if (!financeData.categories.includes(val)) {
+                financeData.categories.push(val); renderTags(); e.target.value = "";
+            }
+        }
+    });
+
+    function renderTags() {
+        const box = document.getElementById('tag-box');
+        box.innerHTML = financeData.categories.map((cat, i) => `
+            <div class="tag" style="background: hsl(${getHue(cat)}, 60%, 45%)">${cat} <span onclick="removeTag(${i})" style="cursor:pointer; margin-left:8px;">✕</span></div>
+        `).join('');
+    }
+    function removeTag(i) { financeData.categories.splice(i, 1); renderTags(); }
+    function renderCatsDropdown() { document.getElementById('new-category').innerHTML = financeData.categories.map(c => `<option value="${c}">${c}</option>`).join(""); }
+
+    function changeMonth() {
+        const m = document.getElementById('month-picker').value;
+        const themes = {
+            jan: {bg:'#e0f2fe', txt:'#0369a1'}, fev: {bg:'#fce7f3', txt:'#be185d'},
+            mar: {bg:'#f0fdf4', txt:'#15803d'}, abr: {bg:'#fff7ed', txt:'#c2410c'},
+            mai: {bg:'#faf5ff', txt:'#7e22ce'}, jun: {bg:'#fef2f2', txt:'#b91c1c'},
+            jul: {bg:'#ecfeff', txt:'#0e7490'}, ago: {bg:'#fffbeb', txt:'#b45309'},
+            set: {bg:'#f5f3ff', txt:'#6d28d9'}, out: {bg:'#fdf2f8', txt:'#db2777'},
+            nov: {bg:'#eff6ff', txt:'#1d4ed8'}, dez: {bg:'#ecfdf5', txt:'#047857'}
+        };
+        const picker = document.getElementById('month-picker');
+        picker.style.backgroundColor = themes[m].bg;
+        picker.style.color = themes[m].txt;
+        picker.style.borderColor = themes[m].txt;
+
+        document.getElementById('salary-input').value = (financeData.globalSalary || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        if (!financeData.monthlyData[m]) financeData.monthlyData[m] = { paidIds: [] };
+        calculate();
+    }
+
+    function calculate() {
+        const m = document.getElementById('month-picker').value;
+        const monthInfo = financeData.monthlyData[m];
+        const list = document.getElementById('debt-list');
+        list.innerHTML = '';
+        let total = 0, pago = 0;
+        let catTotals = {};
+
+        financeData.categories.forEach(c => catTotals[c] = 0);
+        
+        financeData.debts.sort((a, b) => b.value - a.value);
+
+        financeData.debts.forEach((debt) => {
+            const isPaid = monthInfo.paidIds.includes(debt.id);
+            total += debt.value; 
+            if (isPaid) pago += debt.value;
+            if (catTotals[debt.category] !== undefined) catTotals[debt.category] += debt.value;
+
+            const card = document.createElement('div');
+            card.className = `debt-item ${isPaid ? 'paid' : ''}`;
+            card.style.borderLeft = `6px solid hsl(${getHue(debt.category)}, 60%, 50%)`;
+            card.innerHTML = `
+                <input type="checkbox" ${isPaid ? 'checked' : ''} onchange="togglePaid('${debt.id}')" style="width:22px; height:22px; cursor:pointer; accent-color:var(--primary-green);">
+                <div style="flex:1">
+                    <div ondblclick="editField(this, '${debt.id}', 'name')" style="cursor:pointer; font-weight:700;">${debt.name}</div>
+                    <small ondblclick="editField(this, '${debt.id}', 'category')" style="cursor:pointer; font-weight:800; color:hsl(${getHue(debt.category)}, 60%, 50%); text-transform:uppercase; font-size:0.65rem;">${debt.category}</small>
+                </div>
+                <div style="text-align:right">
+                    <div style="color:var(--danger-red); font-weight:800; font-size:1.1rem; cursor:pointer;" ondblclick="editField(this, '${debt.id}', 'value')">${debt.value.toLocaleString('pt-BR', {style:'currency', currency:'BRL'})}</div>
+                    <button onclick="requestRemoveDebt('${debt.id}')" style="background:none; border:none; color:gray; font-size:0.6rem; cursor:pointer; font-weight:700;">REMOVER</button>
+                </div>`;
+            list.appendChild(card);
+        });
+
+        const summaryBox = document.getElementById('cat-summary');
+        summaryBox.innerHTML = '';
+        for (let cat in catTotals) {
+            if (catTotals[cat] > 0) {
+                const pill = document.createElement('div');
+                pill.className = 'cat-pill';
+                pill.style.backgroundColor = `hsl(${getHue(cat)}, 60%, 45%)`;
+                pill.innerHTML = `<span>${cat}</span> <b>${catTotals[cat].toLocaleString('pt-BR', {style:'currency', currency:'BRL'})}</b>`;
+                summaryBox.appendChild(pill);
+            }
+        }
+
+        const salary = parseCurrency(document.getElementById('salary-input').value);
+        document.getElementById('folga-value').innerText = (salary - total).toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+        document.getElementById('stat-total').innerText = total.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+        document.getElementById('stat-pago').innerText = pago.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+    }
+
+    function editField(el, id, field) {
+        const index = financeData.debts.findIndex(d => d.id === id);
+        const oldValue = financeData.debts[index][field];
+        let input;
+
+        if (field === 'category') {
+            input = document.createElement('select');
+            financeData.categories.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c; opt.text = c;
+                if (c === oldValue) opt.selected = true;
+                input.appendChild(opt);
+            });
+        } else {
+            input = document.createElement('input');
+            input.value = field === 'value' ? oldValue.toLocaleString('pt-BR', {minimumFractionDigits:2}) : oldValue;
+        }
+
+        el.innerHTML = ''; el.appendChild(input); input.focus();
+
+        const save = () => {
+            let newVal = input.value;
+            if (field === 'value') { 
+                newVal = parseCurrency(newVal); 
+                if (isNaN(newVal)) newVal = oldValue; 
+            } else if (field === 'name') {
+                newVal = newVal.toUpperCase();
+            }
+            financeData.debts[index][field] = newVal; 
+            calculate(); persist();
+        };
+
+        input.onblur = save;
+        input.onkeydown = (e) => { if(e.key === 'Enter') save(); };
+    }
+
+    function togglePaid(id) {
+        const m = document.getElementById('month-picker').value;
+        const idx = financeData.monthlyData[m].paidIds.indexOf(id);
+        if (idx > -1) financeData.monthlyData[m].paidIds.splice(idx, 1);
+        else financeData.monthlyData[m].paidIds.push(id);
+        calculate(); persist();
+    }
+
+    function addNewDebt() {
+        const name = document.getElementById('new-name').value;
+        const val = parseCurrency(document.getElementById('new-value').value);
+        if (name && val > 0) {
+            financeData.debts.push({ id: Date.now().toString(), name: name.toUpperCase(), value: val, category: document.getElementById('new-category').value });
+            document.getElementById('new-name').value = ''; document.getElementById('new-value').value = '';
+            calculate(); persist();
+        }
+    }
+
+    // Gerenciamento do Modal de Remoção
+    function requestRemoveDebt(id) {
+        debtIdToDelete = id;
+        document.getElementById('deleteModal').style.display = 'flex';
+    }
+
+    function closeDeleteModal() {
+        debtIdToDelete = null;
+        document.getElementById('deleteModal').style.display = 'none';
+    }
+
+    document.getElementById('confirmDeleteBtn').onclick = () => {
+        if (debtIdToDelete) {
+            financeData.debts = financeData.debts.filter(d => d.id !== debtIdToDelete);
+            calculate(); persist();
+            closeDeleteModal();
+        }
+    };
+
+    function manualSave() {
+        financeData.globalSalary = parseCurrency(document.getElementById('salary-input').value);
+        persist();
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    function persist() { localStorage.setItem('alvorada_v12', JSON.stringify(financeData)); }
+    function parseCurrency(v) { return Number(v.toString().replace(/\D/g, "")) / 100; }
+    
+    function handleMoneyInput(input) {
+        let value = input.value.replace(/\D/g, "");
+        value = (value / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        input.value = value;
+        if (input.id === 'salary-input') financeData.globalSalary = parseCurrency(value);
+        calculate();
+    }
+    
+    function toggleTheme() { financeData.lightMode = !financeData.lightMode; applyTheme(); persist(); }
+    function applyTheme() {
+        const btn = document.getElementById('theme-btn');
+        if (financeData.lightMode) { document.body.classList.remove('dark-mode'); btn.innerText = "🌙"; } 
+        else { document.body.classList.add('dark-mode'); btn.innerText = "☀️"; }
+    }
+
+    window.onload = () => {
+        applyTheme();
+        renderCatsDropdown();
+        const monthsIds = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+        document.getElementById('month-picker').value = monthsIds[new Date().getMonth()];
+        changeMonth();
+    };
+</script>
+</body>
+</html>
