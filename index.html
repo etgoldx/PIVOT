@@ -19,6 +19,7 @@
             --header-gradient: linear-gradient(135deg, #1b4332, #2d6a4f);
             --input-bg: #f9fbfb; --btn-shadow: rgba(27, 67, 50, 0.15);
             --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --led-green: #70e000;
         }
 
         body.dark-mode {
@@ -27,10 +28,17 @@
             --paid-bg: #1a2e1a; --paid-text: #aacc00; --border-color: #334144;
             --header-gradient: linear-gradient(135deg, #70e000, #38b000);
             --input-bg: #0b1011; --btn-shadow: rgba(56, 176, 0, 0.4);
+            --led-green: #38b000;
         }
 
         body { font-family: 'Quicksand', sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; display: flex; flex-direction: column; align-items: center; transition: var(--transition); min-height: 100vh; overflow-x: hidden; }
         
+        /* LED NOTIFICATION SYSTEM */
+        #led-strip { position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: var(--led-green); box-shadow: 0 0 10px var(--led-green); z-index: 10000; transition: width 0.5s ease; }
+        #led-strip.active { width: 100%; }
+        #save-label { position: fixed; top: 8px; left: 50%; transform: translateX(-50%); color: var(--led-green); font-size: 0.6rem; font-weight: 800; letter-spacing: 3px; opacity: 0; z-index: 10000; transition: opacity 0.5s ease; pointer-events: none; }
+        #led-strip.active + #save-label { opacity: 0.5; }
+
         #auth-screen { position: fixed; inset: 0; background: var(--bg-body); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; transition: var(--transition); }
         .auth-card { background: var(--bg-card); padding: 40px; border-radius: 28px; width: 100%; max-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); text-align: center; border: 1px solid var(--border-color); animation: slideIn 0.6s ease; }
         .auth-input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--input-bg); font-family: inherit; box-sizing: border-box; color: var(--text-main); outline: none; transition: var(--transition); }
@@ -38,9 +46,6 @@
         #main-content { display: none; width: 100%; flex-direction: column; align-items: center; opacity: 0; transition: opacity 0.8s ease; }
         #main-content.visible { display: flex; opacity: 1; }
         .container { width: 98%; max-width: 1400px; padding: 20px; box-sizing: border-box; position: relative; }
-        
-        #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #1b4332; color: #70e000; padding: 15px 30px; border-radius: 50px; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 9999; transition: top 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); display: flex; align-items: center; gap: 10px; border: 1px solid var(--primary-green); }
-        #toast.show { top: 30px; }
 
         .top-controls { position: absolute; right: 20px; top: 35px; display: flex; align-items: center; gap: 10px; z-index: 10; }
         .month-selector { border: 2px solid var(--border-color); padding: 10px 15px; border-radius: 12px; font-family: inherit; font-size: 0.85rem; font-weight: 800; outline: none; cursor: pointer; transition: var(--transition); }
@@ -66,42 +71,36 @@
         .debt-item { padding: 18px 22px; border-radius: 22px; display: flex; align-items: center; gap: 15px; border: 1.5px solid var(--border-color); background: var(--bg-card); transition: var(--transition); position: relative; animation: slideUp 0.5s ease backwards; }
         .debt-item.paid { background-color: var(--paid-bg) !important; border-color: transparent !important; opacity: 0.7; }
         
-        /* LINHA DE ADICIONAR (RESTAURADA) */
         .add-form { background: var(--bg-card); padding: 25px; border-radius: 24px; margin-top: 40px; border: 1px solid var(--border-color); display: flex; flex-direction: row; gap: 15px; align-items: flex-end; width: 100%; box-sizing: border-box; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         .form-group { display: flex; flex-direction: column; gap: 8px; flex: 1; }
         .add-form input, .add-form select { padding: 14px 18px; border: 1.5px solid var(--border-color); border-radius: 14px; background: var(--input-bg); color: var(--text-main); font-family: inherit; font-weight: 600; width: 100%; box-sizing: border-box; outline: none; transition: var(--transition); }
-        .add-form input:focus, .add-form select:focus { border-color: var(--primary-green); background: var(--bg-card); box-shadow: 0 0 0 4px var(--btn-shadow); }
         
         .btn-add { background: var(--header-gradient); color: #fff; border: none; padding: 0 30px; height: 55px; border-radius: 16px; font-weight: 800; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: var(--transition); box-shadow: 0 8px 20px var(--btn-shadow); text-transform: uppercase; }
-        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 12px 25px var(--btn-shadow); }
+        .label-mini { font-size:0.65rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; margin-left: 5px; }
 
-        .label-mini { font-size:0.65rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; margin-left: 5px; letter-spacing: 0.5px; }
-
-        /* MODAIS */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 5000; opacity: 0; transition: opacity 0.3s ease; }
         .modal-overlay.show { display: flex; opacity: 1; }
         .modal-content { background: var(--bg-card); padding: 30px; border-radius: 28px; width: 90%; max-width: 400px; border: 1px solid var(--border-color); text-align: center; transform: translateY(30px); transition: transform 0.4s ease; }
-        .modal-overlay.show .modal-content { transform: translateY(0); }
 
-        /* ANIMATIONS */
         @keyframes slideIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
 
-        /* MOBILE FIXES */
         @media (max-width: 1200px) { #debt-list { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 768px) { 
             #debt-list { grid-template-columns: 1fr; } 
-            .add-form { flex-direction: column; align-items: stretch; padding: 20px; } 
+            .add-form { flex-direction: column; align-items: stretch; } 
             .top-controls { position: relative; top:0; right:0; margin-bottom: 20px; justify-content: center; } 
             .salary-section, .balance-section { flex: 100%; border-right: none; border-bottom: 1px dashed var(--border-color); text-align: center; }
             .balance-section { flex-direction: column; gap: 15px; }
             #folga-value { font-size: 2.2rem !important; }
-            .salary-section input { text-align: center !important; font-size: 1.5rem !important; }
         }
     </style>
 </head>
 <body>
+
+<div id="led-strip"></div>
+<div id="save-label">SALVO</div>
 
 <div id="auth-screen">
     <div class="auth-card">
@@ -115,8 +114,6 @@
 </div>
 
 <div id="main-content">
-    <div id="toast"><span>✅</span> Sincronizado com a nuvem</div>
-
     <div id="configModal" class="modal-overlay">
         <div class="modal-content">
             <h3 style="margin:0 0 10px;">Métodos de Pagamento</h3>
@@ -254,9 +251,11 @@
     async function persist() {
         if (!currentUser) return;
         await setDoc(doc(db, "users", currentUser.uid), financeData);
-        const t = document.getElementById('toast');
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 2000);
+        
+        // LED STRIP NOTIFICATION
+        const led = document.getElementById('led-strip');
+        led.classList.add('active');
+        setTimeout(() => led.classList.remove('active'), 1200);
     }
 
     function getHue(str) {
